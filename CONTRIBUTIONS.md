@@ -21,6 +21,7 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `tools/data/prepare_domainnet_splits.py` | New | Writes everything in `splits/domainnet/` from the official lists |
 | `datasets/domainnet_b2n.py` | New | One registered dataset class per style, plus a smoke-only class with 5 test images per class. Reads only `splits/domainnet/`, applies the fixed class split, and takes class names and the class count from the fixed list, not from train data |
 | `configs/datasets/domainnet_b2n_*.yaml` | New | One dataset config per style, plus one for the smoke class |
+| `tools/data/check_domainnet_splits.py` | New | Checks the split files against the audit and the official lists, and the dataset classes built from them |
 | `splits/domainnet/` | New | Generated: class list, per-class audit, 16-shot train and val files for seeds 1-3, and a fixed test subset per style |
 | `data/README.md` | New | Generated notes: cleaned-list choice, fixed base/new split, classes missing from painting, classes with fewer than 16 training images |
 | `utils/methods.py` | New | Method registry: trainer, config file, final epoch and Slurm time limit for each method, plus the shot count and seeds |
