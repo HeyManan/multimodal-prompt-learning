@@ -1,10 +1,11 @@
 import json
 import os
+from collections import Counter
 
 from dassl.data.datasets import DATASET_REGISTRY, Datum, DatasetBase
 
 from utils.domainnet import FIRST_NEW_LABEL, LAST_BASE_LABEL
-from utils.methods import NUM_SHOTS
+from utils.methods import NUM_SHOTS, SMOKE_TEST_IMAGES_PER_CLASS
 from utils.paths import domainnet_classnames_path, domainnet_shot_path, domainnet_test_path
 
 
@@ -125,3 +126,20 @@ class DomainNetB2N_real(DomainNetB2NBase):
 @DATASET_REGISTRY.register()
 class DomainNetB2N_sketch(DomainNetB2NBase):
     style = "sketch"
+
+
+@DATASET_REGISTRY.register()
+class DomainNetB2NSmoke_real(DomainNetB2N_real):
+    """Smoke test only: a few test images per class, to fit the test's 10 minute limit.
+
+    A separate class, so no setting can shrink the test set of a real run.
+    """
+
+    def select_test(self, items):
+        seen = Counter()
+        kept = []
+        for item in items:
+            seen[item["label"]] += 1
+            if seen[item["label"]] <= SMOKE_TEST_IMAGES_PER_CLASS:
+                kept.append(item)
+        return kept

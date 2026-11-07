@@ -32,6 +32,7 @@ CUSTOM_TEMPLATES = {
     "DomainNetB2N_quickdraw": "a photo of a {}.",
     "DomainNetB2N_real": "a photo of a {}.",
     "DomainNetB2N_sketch": "a photo of a {}.",
+    "DomainNetB2NSmoke_real": "a photo of a {}.",
 }
 
 

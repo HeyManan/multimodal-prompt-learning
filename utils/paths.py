@@ -12,6 +12,7 @@ SMOKE_FOLDER = "smoke"
 DOMAINNET_SPLITS_DIR = REPO_ROOT / "splits" / "domainnet"
 # Their split files are committed, so they need no split file or cache in $DATA.
 DOMAINNET_DATASETS = {"domainnet_b2n_{}".format(style): style for style in DOMAINNET_STYLES}
+DOMAINNET_DATASETS["domainnet_b2n_real_smoke"] = "real"
 
 # A dataset class makes a new random split when its split file is absent.
 SPLIT_FILES = {

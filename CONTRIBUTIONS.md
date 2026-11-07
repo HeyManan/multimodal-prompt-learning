@@ -5,7 +5,7 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | Component | Origin | What I changed |
 | --- | --- | --- |
 | Training loop and trainers (MaPLe, IVLP, CoCoOp) | Base repo @ 69bce21 | Unmodified |
-| `trainers/zsclip.py` | Base repo @ 69bce21 | Six added `CUSTOM_TEMPLATES` entries, `"a photo of a {}."`, one per DomainNet style |
+| `trainers/zsclip.py` | Base repo @ 69bce21 | Seven added `CUSTOM_TEMPLATES` entries, `"a photo of a {}."`: one per DomainNet style and one for the smoke class |
 | `train.py` | Base repo @ 69bce21 | One added line: `import datasets.domainnet_b2n`, which registers the DomainNet classes |
 | `.gitignore` | New | Keeps outputs, logs, datasets and checkpoints out of git |
 | `tools/data/common.sh` | New | Download, checksum and image count helpers shared by the download scripts |
@@ -19,8 +19,8 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `tools/data/write_domainnet_notes.py` | New | Generates `data/README.md` from the DomainNet lists |
 | `utils/domainnet.py` | New | DomainNet styles, the fixed 0-172 / 173-344 split, the class name rule and list reading |
 | `tools/data/prepare_domainnet_splits.py` | New | Writes everything in `splits/domainnet/` from the official lists |
-| `datasets/domainnet_b2n.py` | New | One registered dataset class per style. Reads only `splits/domainnet/`, applies the fixed class split, and takes class names and the class count from the fixed list, not from train data |
-| `configs/datasets/domainnet_b2n_*.yaml` | New | One dataset config per style |
+| `datasets/domainnet_b2n.py` | New | One registered dataset class per style, plus a smoke-only class with 5 test images per class. Reads only `splits/domainnet/`, applies the fixed class split, and takes class names and the class count from the fixed list, not from train data |
+| `configs/datasets/domainnet_b2n_*.yaml` | New | One dataset config per style, plus one for the smoke class |
 | `splits/domainnet/` | New | Generated: class list, per-class audit, 16-shot train and val files for seeds 1-3, and a fixed test subset per style |
 | `data/README.md` | New | Generated notes: cleaned-list choice, fixed base/new split, classes missing from painting, classes with fewer than 16 training images |
 | `utils/methods.py` | New | Method registry: trainer, config file, final epoch and Slurm time limit for each method, plus the shot count and seeds |
@@ -31,7 +31,7 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `utils/run_record.py` | New | Accuracy, harmonic mean, git commit, Slurm job id and writing `results.json` |
 | `utils/paper_results.py` | New | The MaPLe paper's Table 3 targets for DTD and EuroSAT |
 | `tools/prepare_fewshot_cache.py` | New | Builds the repo's few-shot cache for one dataset and its seeds in one process, then checks the image counts |
-| `tools/run_base2new.py` | New | Runs one (method, dataset, seed) by calling `train.py`, without changing it, and writes `results.json`; zero-shot runs `--eval-only` on base and new with a fixed RNG seed |
+| `tools/run_base2new.py` | New | Runs one (method, dataset, seed) by calling `train.py`, without changing it, and writes `results.json`; zero-shot runs `--eval-only` on base and new with a fixed RNG seed; `--smoke` sends results to `$OUTPUT/smoke` for both |
 | `tools/submit_runs.py` | New | Expands a group into runs, skips finished ones, and submits one Slurm array per time limit, one after another, so at most 2 jobs run at once |
 | `tools/analysis/collect_results.py` | New | Gathers every `results.json` into `results/runs.csv` |
 | `tools/analysis/reproduction_table.py` | New | Writes the CSV and Markdown table comparing our results with the paper |
@@ -39,3 +39,4 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `slurm/run_one.sbatch` | New | One GPU GAIVI job for one run; also runs as an array from a task file |
 | `slurm/submit.sh` | New | Activates the environment and calls `tools/submit_runs.py` |
 | `scripts/smoke_test.sh` | New | 10 minute end-to-end test: MaPLe on DTD, seed 1, 1 epoch |
+| `scripts/smoke_test_domainnet.sh` | New | 10 minute end-to-end test on the small DomainNet real subset: MaPLe, seed 1, 1 epoch, then ZeroshotCLIP on base and new |

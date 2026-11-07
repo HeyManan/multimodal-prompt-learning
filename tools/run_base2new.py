@@ -33,7 +33,7 @@ def parse_args():
     parser.add_argument("--dataset", required=True)
     parser.add_argument("--seed", type=int, help="required for trained methods, >= 1")
     parser.add_argument("--force", action="store_true", help="redo a finished run")
-    parser.add_argument("--smoke", action="store_true", help="train for 1 epoch, in $OUTPUT/smoke")
+    parser.add_argument("--smoke", action="store_true", help="1 epoch if trained, results in $OUTPUT/smoke")
     return parser.parse_args()
 
 
@@ -164,8 +164,6 @@ def main():
     args = parse_args()
     method = get_method(args.method)
     check_seed(method, args.seed)
-    if args.smoke and not method.is_trained:
-        raise ValueError("Expected a trained method with --smoke, found {}.".format(args.method))
 
     data_root = require_env_dir("DATA")
     output_root = require_env_dir("OUTPUT")

@@ -4,6 +4,7 @@ from typing import NamedTuple, Optional
 NUM_SHOTS = 16
 DEFAULT_SEEDS = (1, 2, 3)
 SMOKE_EPOCHS = 1
+SMOKE_TEST_IMAGES_PER_CLASS = 5
 
 # Recorded in results.json and used in folder names for runs without seeds.
 NO_SEED = "none"
