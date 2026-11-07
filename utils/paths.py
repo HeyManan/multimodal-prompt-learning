@@ -8,6 +8,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 RUNS_FOLDER = "base2new"
 SMOKE_FOLDER = "smoke"
 
+DOMAINNET_SPLITS_DIR = REPO_ROOT / "splits" / "domainnet"
+
 # A dataset class makes a new random split when its split file is absent.
 SPLIT_FILES = {
     "dtd": "split_zhou_DescribableTextures.json",
@@ -54,6 +56,18 @@ def require_fewshot_cache(data_root, dataset, seed):
             "Expected the few-shot cache at {}, found none. Build it first with "
             "tools/prepare_fewshot_cache.py, because parallel jobs must not write it.".format(path)
         )
+
+
+def domainnet_classnames_path():
+    return DOMAINNET_SPLITS_DIR / "classnames.json"
+
+
+def domainnet_shot_path(style, seed):
+    return DOMAINNET_SPLITS_DIR / style / "shot_{}-seed_{}.json".format(NUM_SHOTS, seed)
+
+
+def domainnet_test_path(style):
+    return DOMAINNET_SPLITS_DIR / style / "test_subset.json"
 
 
 def run_dir(output_root, dataset, method_name, seed, smoke=False):

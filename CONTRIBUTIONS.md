@@ -15,9 +15,12 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `environment_freeze.txt` | New | `conda list` export of the environment on GAIVI |
 | `README.md` | New | Project summary, pinned commits, GAIVI setup, smoke test and how to reproduce the results. The base repo's README is kept at `docs/ORIGINAL_README.md` |
 | `tools/data/write_domainnet_notes.py` | New | Generates `data/README.md` from the DomainNet lists |
+| `utils/domainnet.py` | New | DomainNet styles, the fixed 0-172 / 173-344 split, the class name rule and list reading |
+| `tools/data/prepare_domainnet_splits.py` | New | Writes everything in `splits/domainnet/` from the official lists |
+| `splits/domainnet/` | New | Generated: class list, per-class audit, 16-shot train and val files for seeds 1-3, and a fixed test subset per style |
 | `data/README.md` | New | Generated notes: cleaned-list choice, fixed base/new split, classes missing from painting, classes with fewer than 16 training images |
 | `utils/methods.py` | New | Method registry: trainer, config file and final epoch for MaPLe, CoCoOp and ZeroshotCLIP, plus the shot count and seeds |
-| `utils/paths.py` | New | Reads `$DATA` and `$OUTPUT`, builds run and cache paths, checks split and cache files exist |
+| `utils/paths.py` | New | Reads `$DATA` and `$OUTPUT`, builds run, cache and DomainNet split paths, checks split and cache files exist |
 | `utils/logging_setup.py` | New | Logging setup shared by the scripts; re-enables logging after an import disables it |
 | `utils/log_parsing.py` | New | Reads correct and total counts from Dassl's `log.txt`, because the log prints accuracy to 1 decimal |
 | `utils/run_record.py` | New | Accuracy, harmonic mean, git commit, Slurm job id and writing `results.json` |

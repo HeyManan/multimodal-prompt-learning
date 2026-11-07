@@ -2,18 +2,23 @@
 
 The numbers in that file come only from this script, so they can be regenerated:
 
-    DATA=/path/to/datasets python tools/data/write_domainnet_notes.py
+    DATA=/path/to/datasets PYTHONPATH="${PWD}" python tools/data/write_domainnet_notes.py
 """
 import logging
 import os
 from collections import Counter
 from pathlib import Path
 
-STYLES = ["clipart", "infograph", "painting", "quickdraw", "real", "sketch"]
-SPLITS = ["train", "test"]
-NUM_CLASSES = 345
-LAST_BASE_LABEL = 172
-NUM_SHOTS = 16
+from utils.domainnet import (
+    LAST_BASE_LABEL,
+    NUM_CLASSES,
+    STYLES,
+    group_of,
+    label_to_folder,
+    read_all_lists,
+)
+from utils.methods import NUM_SHOTS
+
 OUTPUT_PATH = Path(__file__).resolve().parents[2] / "data" / "README.md"
 
 INTRO = """# Data notes
@@ -31,45 +36,8 @@ All styles share one fixed split of the {num_classes} classes: labels 0-{last_ba
 """
 
 
-def read_list(list_path):
-    """Return (class name, label) for every line of a DomainNet list file."""
-    if not list_path.is_file():
-        raise FileNotFoundError(f"Expected a DomainNet list at {list_path}, found no file.")
-    entries = []
-    for line in list_path.read_text().splitlines():
-        image_path, label = line.split()
-        entries.append((image_path.split("/")[1], int(label)))
-    return entries
-
-
-def read_all_lists(split_dir):
-    return {
-        (style, split): read_list(split_dir / f"{style}_{split}.txt")
-        for style in STYLES
-        for split in SPLITS
-    }
-
-
-def label_to_class_name(all_entries):
-    names = {}
-    for entries in all_entries.values():
-        for class_name, label in entries:
-            if names.setdefault(label, class_name) != class_name:
-                raise ValueError(
-                    f"Expected one class name for label {label}, "
-                    f"found {names[label]} and {class_name}."
-                )
-    if sorted(names) != list(range(NUM_CLASSES)):
-        raise ValueError(f"Expected labels 0-{NUM_CLASSES - 1}, found {len(names)} labels.")
-    return names
-
-
-def group_of(label):
-    return "base" if label <= LAST_BASE_LABEL else "new"
-
-
 def label_counts(entries):
-    counts = Counter(label for _, label in entries)
+    counts = Counter(label for _, _, label in entries)
     return [counts[label] for label in range(NUM_CLASSES)]
 
 
@@ -143,7 +111,7 @@ def main():
         raise RuntimeError("Expected DATA to name the datasets folder, found it unset or empty.")
 
     all_entries = read_all_lists(Path(data_root) / "domainnet" / "splits")
-    names = label_to_class_name(all_entries)
+    names = label_to_folder(all_entries)
     OUTPUT_PATH.parent.mkdir(exist_ok=True)
     OUTPUT_PATH.write_text(build_notes(all_entries, names))
     logging.info("Wrote %s", OUTPUT_PATH)
