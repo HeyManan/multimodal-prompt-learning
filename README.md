@@ -94,6 +94,15 @@ sbatch scripts/smoke_test.sh
 tail -n 1 smoke_<job id>.out
 ```
 
+The DomainNet smoke test uses the `real` style with 5 test images per class. It runs MaPLe, seed 1,
+for 1 epoch, then zero-shot CLIP on base and new. It has the same 10 minute limit and last line, and
+needs DomainNet in `$DATA`.
+
+```bash
+sbatch scripts/smoke_test_domainnet.sh
+tail -n 1 smoke_domainnet_<job id>.out
+```
+
 ## Reproduce the paper's base-to-novel results
 
 This covers MaPLe, Co-CoOp and zero-shot CLIP on DTD and EuroSAT, with 16 shots and seeds 1-3. Run
@@ -137,4 +146,48 @@ compare the mean and sample SD over seeds with the paper's Table 3. Cells with f
 are marked preliminary.
 
 To add a method, add an entry to `METHODS` in `utils/methods.py`. To add a dataset, add its split
-file to `SPLIT_FILES` in `utils/paths.py`.
+file to `SPLIT_FILES` in `utils/paths.py`. A DomainNet dataset goes in `DOMAINNET_DATASETS` instead.
+
+## DomainNet base-to-novel runs
+
+Each style is one dataset: `domainnet_b2n_clipart`, `_infograph`, `_painting`, `_quickdraw`, `_real`
+and `_sketch`. All styles share one class split: labels 0-172 are base and 173-344 are new, in the
+label order of the official lists. Run every command from the repository root, with `$DATA` and
+`$OUTPUT` set, `conda activate maple` and `export PYTHONPATH="${PWD}"`.
+
+**1. Split files**
+
+The files in [splits/domainnet/](splits/domainnet/README.md) are committed, and training only reads
+them, so `tools/prepare_fewshot_cache.py` is not used for DomainNet. They hold 16 training images per
+base class for seeds 1-3, validation images from outside that draw, and one fixed test subset of up
+to 50 images per class that every method and seed shares.
+
+To regenerate them from the lists and check them against the lists, the images and the dataset
+classes:
+
+```bash
+python tools/data/prepare_domainnet_splits.py
+python tools/data/check_domainnet_splits.py
+```
+
+**2. Submit the runs**
+
+The base-to-novel methods are listed below. The time limit of each comes from `utils/methods.py`.
+
+| Method | Trainer | Prompt depth | Learning rate | Slurm limit |
+| --- | --- | --- | --- | --- |
+| `MaPLe` | MaPLe | 9 | 0.0035 | 1 h |
+| `MaPLe-12` | MaPLe | 12 | 0.0035 | 1 h |
+| `MaPLe-shallow` | MaPLe | 1 | 0.0035 | 1 h |
+| `IVL-12` | IVLP | 12 text, 12 vision | 0.0035 | 1 h |
+| `IVL-9` | IVLP | 9 text, 9 vision | 0.0035 | 1 h |
+| `DLP-12` | IVLP | 12 text, 0 vision | 0.0025 | 1 h |
+| `CoCoOp` | CoCoOp | none | 0.002 | 3 h |
+| `ZeroshotCLIP` | ZeroshotCLIP | none | none | 1 h |
+
+```bash
+bash slurm/submit.sh --datasets domainnet_b2n_real --methods MaPLe CoCoOp ZeroshotCLIP --seeds 1 2 3
+```
+
+A Slurm array has one time limit, so a group with different limits becomes one array per limit. Each
+array starts when the one before it ends, so at most 2 jobs still run at once.
