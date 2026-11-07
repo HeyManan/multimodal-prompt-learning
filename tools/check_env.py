@@ -1,5 +1,6 @@
 """Report the GPU software versions and run CLIP ViT-B/16 once on the GPU."""
 import logging
+import sys
 
 import torch
 from dassl.config import get_cfg_default
@@ -47,7 +48,7 @@ def run_clip_on_gpu(model):
 
 
 def main():
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s", stream=sys.stdout, force=True)
     report_versions()
     require_gpu()
     run_clip_on_gpu(load_clip())
