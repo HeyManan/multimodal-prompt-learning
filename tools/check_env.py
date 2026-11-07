@@ -49,6 +49,7 @@ def run_clip_on_gpu(model):
 
 def main():
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s", stream=sys.stdout, force=True)
+    logging.disable(logging.NOTSET)
     report_versions()
     require_gpu()
     run_clip_on_gpu(load_clip())
