@@ -4,7 +4,8 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 
 | Component | Origin | What I changed |
 | --- | --- | --- |
-| Training loop and trainers (MaPLe, IVLP, CoCoOp, ZeroshotCLIP) | Base repo @ 69bce21 | Unmodified |
+| Training loop and trainers (MaPLe, IVLP, CoCoOp) | Base repo @ 69bce21 | Unmodified |
+| `train.py` | Base repo @ 69bce21 | One added line: `import datasets.domainnet_b2n`, which registers the DomainNet classes |
 | `.gitignore` | New | Keeps outputs, logs, datasets and checkpoints out of git |
 | `tools/data/common.sh` | New | Download, checksum and image count helpers shared by the download scripts |
 | `tools/data/download_domainnet.sh` | New | Downloads the 6 DomainNet styles and the cleaned train/test lists, prints image counts |
@@ -17,6 +18,8 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `tools/data/write_domainnet_notes.py` | New | Generates `data/README.md` from the DomainNet lists |
 | `utils/domainnet.py` | New | DomainNet styles, the fixed 0-172 / 173-344 split, the class name rule and list reading |
 | `tools/data/prepare_domainnet_splits.py` | New | Writes everything in `splits/domainnet/` from the official lists |
+| `datasets/domainnet_b2n.py` | New | One registered dataset class per style. Reads only `splits/domainnet/`, applies the fixed class split, and takes class names and the class count from the fixed list, not from train data |
+| `configs/datasets/domainnet_b2n_*.yaml` | New | One dataset config per style |
 | `splits/domainnet/` | New | Generated: class list, per-class audit, 16-shot train and val files for seeds 1-3, and a fixed test subset per style |
 | `data/README.md` | New | Generated notes: cleaned-list choice, fixed base/new split, classes missing from painting, classes with fewer than 16 training images |
 | `utils/methods.py` | New | Method registry: trainer, config file and final epoch for MaPLe, CoCoOp and ZeroshotCLIP, plus the shot count and seeds |
