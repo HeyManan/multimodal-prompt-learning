@@ -1,7 +1,8 @@
 #!/bin/bash -l
 # One (method, dataset, seed) run. Submit from the repository root with $DATA and $OUTPUT set:
 #   sbatch slurm/run_one.sbatch --method MaPLe --dataset dtd --seed 1
-# slurm/submit.sh submits it as an array and passes a task file with one run per line.
+# slurm/submit.sh submits it as an array and passes a task file with one run per line. It also
+# passes the method's --time from utils/methods.py, which overrides the limit below.
 #
 # ClsGenAI is the GAIVI class partition. Other clusters must change it.
 #SBATCH --job-name=base2new

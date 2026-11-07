@@ -11,11 +11,16 @@ NO_SEED = "none"
 # It is set only so that every run has a seed that is set and logged.
 ZEROSHOT_RNG_SEED = 1
 
+# Slurm time limits, in the format of sbatch --time.
+ONE_HOUR = "01:00:00"
+THREE_HOURS = "03:00:00"
+
 
 class Method(NamedTuple):
     trainer: str
     config_file: str
     final_epoch: Optional[int]  # None means the method has no training and no seeds
+    time_limit: str
 
     @property
     def is_trained(self):
@@ -27,16 +32,49 @@ METHODS = {
         trainer="MaPLe",
         config_file="configs/trainers/MaPLe/vit_b16_c2_ep5_batch4_2ctx.yaml",
         final_epoch=5,
+        time_limit=ONE_HOUR,
+    ),
+    "MaPLe-12": Method(
+        trainer="MaPLe",
+        config_file="configs/trainers/MaPLe/vit_b16_c2_ep5_batch4_2ctx_depth12.yaml",
+        final_epoch=5,
+        time_limit=ONE_HOUR,
+    ),
+    "MaPLe-shallow": Method(
+        trainer="MaPLe",
+        config_file="configs/trainers/MaPLe/vit_b16_c2_ep5_batch4_2ctx_depth1.yaml",
+        final_epoch=5,
+        time_limit=ONE_HOUR,
+    ),
+    "IVL-12": Method(
+        trainer="IVLP",
+        config_file="configs/trainers/IVLP/vit_b16_c2_ep5_batch4_2+2ctx.yaml",
+        final_epoch=5,
+        time_limit=ONE_HOUR,
+    ),
+    "IVL-9": Method(
+        trainer="IVLP",
+        config_file="configs/trainers/IVLP/vit_b16_c2_ep5_batch4_2+2ctx_depth9.yaml",
+        final_epoch=5,
+        time_limit=ONE_HOUR,
+    ),
+    "DLP-12": Method(
+        trainer="IVLP",
+        config_file="configs/trainers/IVLP/vit_b16_c2_ep5_batch4_4ctx_language_only.yaml",
+        final_epoch=5,
+        time_limit=ONE_HOUR,
     ),
     "CoCoOp": Method(
         trainer="CoCoOp",
         config_file="configs/trainers/CoCoOp/vit_b16_c4_ep10_batch1_ctxv1.yaml",
         final_epoch=10,
+        time_limit=THREE_HOURS,
     ),
     "ZeroshotCLIP": Method(
         trainer="ZeroshotCLIP",
         config_file="configs/trainers/CoOp/vit_b16.yaml",
         final_epoch=None,
+        time_limit=ONE_HOUR,
     ),
 }
 

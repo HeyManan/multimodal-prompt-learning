@@ -1,4 +1,4 @@
-"""Submit a group of runs as one Slurm array, skipping finished runs. Called by slurm/submit.sh."""
+"""Submit a group of runs as Slurm arrays, skipping finished runs. Called by slurm/submit.sh."""
 import argparse
 import getpass
 import logging
@@ -83,23 +83,48 @@ def task_line(run, force):
     return line
 
 
-def write_task_file(slurm_dir, runs, force):
-    path = slurm_dir / "tasks_{}.txt".format(time.strftime("%Y%m%d-%H%M%S"))
+def group_by_time_limit(runs):
+    """Return {time limit: runs}, because every task of an array has the same limit."""
+    groups = {}
+    for run in runs:
+        groups.setdefault(get_method(run[1]).time_limit, []).append(run)
+    return groups
+
+
+def write_task_file(slurm_dir, runs, force, group_number):
+    # The number keeps two groups apart, as both are written in the same second.
+    path = slurm_dir / "tasks_{}_{}.txt".format(time.strftime("%Y%m%d-%H%M%S"), group_number)
     path.write_text("".join(task_line(run, force) + "\n" for run in runs))
     return path
 
 
-def submit_array(slurm_dir, task_file, num_tasks):
+def submit_array(slurm_dir, task_file, num_tasks, time_limit, previous_job_id):
     command = [
         "sbatch",
+        "--parsable",
         "--array=1-{}%{}".format(num_tasks, MAX_CONCURRENT_JOBS),
+        "--time={}".format(time_limit),
         "--job-name={}".format(JOB_NAME),
         "--output={}".format(slurm_dir / "%x_%A_%a.out"),
-        "slurm/run_one.sbatch",
-        str(task_file),
     ]
+    # %2 limits one array only, so arrays run one after another to keep the limit.
+    if previous_job_id is not None:
+        command.append("--dependency=afterany:{}".format(previous_job_id))
+    command += ["slurm/run_one.sbatch", str(task_file)]
     logging.info("Running: %s", " ".join(command))
-    subprocess.run(command, cwd=str(REPO_ROOT), check=True)
+    output = subprocess.check_output(command, cwd=str(REPO_ROOT), universal_newlines=True)
+    # --parsable prints "<job id>" or "<job id>;<cluster>".
+    job_id = output.strip().split(";")[0]
+    logging.info("Submitted array %s: %d runs, limit %s.", job_id, num_tasks, time_limit)
+    return job_id
+
+
+def submit_groups(slurm_dir, runs, force):
+    previous_job_id = None
+    groups = group_by_time_limit(runs)
+    for group_number, (time_limit, group) in enumerate(groups.items(), start=1):
+        task_file = write_task_file(slurm_dir, group, force, group_number)
+        previous_job_id = submit_array(slurm_dir, task_file, len(group), time_limit, previous_job_id)
 
 
 def main():
@@ -116,8 +141,7 @@ def main():
     if pending:
         slurm_dir = output_root / SLURM_FOLDER
         slurm_dir.mkdir(exist_ok=True)
-        task_file = write_task_file(slurm_dir, pending, args.force)
-        submit_array(slurm_dir, task_file, len(pending))
+        submit_groups(slurm_dir, pending, args.force)
     logging.info("Submitted %d runs, skipped %d finished runs.", len(pending), len(runs) - len(pending))
 
 

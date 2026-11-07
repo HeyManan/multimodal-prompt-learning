@@ -23,7 +23,8 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `configs/datasets/domainnet_b2n_*.yaml` | New | One dataset config per style |
 | `splits/domainnet/` | New | Generated: class list, per-class audit, 16-shot train and val files for seeds 1-3, and a fixed test subset per style |
 | `data/README.md` | New | Generated notes: cleaned-list choice, fixed base/new split, classes missing from painting, classes with fewer than 16 training images |
-| `utils/methods.py` | New | Method registry: trainer, config file and final epoch for MaPLe, CoCoOp and ZeroshotCLIP, plus the shot count and seeds |
+| `utils/methods.py` | New | Method registry: trainer, config file, final epoch and Slurm time limit for each method, plus the shot count and seeds |
+| `configs/trainers/MaPLe/*_depth12.yaml`, `*_depth1.yaml`, `configs/trainers/IVLP/*_depth9.yaml` | New | Copies of the base repo's MaPLe and IVLP configs; only the prompt depth differs |
 | `utils/paths.py` | New | Reads `$DATA` and `$OUTPUT`, lists the DomainNet datasets, builds run, cache and split paths, checks split and cache files exist |
 | `utils/logging_setup.py` | New | Logging setup shared by the scripts; re-enables logging after an import disables it |
 | `utils/log_parsing.py` | New | Reads correct and total counts from Dassl's `log.txt`, because the log prints accuracy to 1 decimal |
@@ -31,7 +32,7 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `utils/paper_results.py` | New | The MaPLe paper's Table 3 targets for DTD and EuroSAT |
 | `tools/prepare_fewshot_cache.py` | New | Builds the repo's few-shot cache for one dataset and its seeds in one process, then checks the image counts |
 | `tools/run_base2new.py` | New | Runs one (method, dataset, seed) by calling `train.py`, without changing it, and writes `results.json`; zero-shot runs `--eval-only` on base and new with a fixed RNG seed |
-| `tools/submit_runs.py` | New | Expands a group into runs, skips finished ones, and submits a Slurm array limited to 2 jobs at once |
+| `tools/submit_runs.py` | New | Expands a group into runs, skips finished ones, and submits one Slurm array per time limit, one after another, so at most 2 jobs run at once |
 | `tools/analysis/collect_results.py` | New | Gathers every `results.json` into `results/runs.csv` |
 | `tools/analysis/reproduction_table.py` | New | Writes the CSV and Markdown table comparing our results with the paper |
 | `slurm/activate_env.sh` | New | Repository-root check and conda activation, with the rules from `slurm/test_env.sbatch` |
