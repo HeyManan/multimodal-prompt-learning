@@ -26,6 +26,12 @@ CUSTOM_TEMPLATES = {
     "ImageNetV2": "a photo of a {}.",
     "ImageNetA": "a photo of a {}.",
     "ImageNetR": "a photo of a {}.",
+    "DomainNetB2N_clipart": "a photo of a {}.",
+    "DomainNetB2N_infograph": "a photo of a {}.",
+    "DomainNetB2N_painting": "a photo of a {}.",
+    "DomainNetB2N_quickdraw": "a photo of a {}.",
+    "DomainNetB2N_real": "a photo of a {}.",
+    "DomainNetB2N_sketch": "a photo of a {}.",
 }
 
 

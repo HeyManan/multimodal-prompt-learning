@@ -5,6 +5,7 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | Component | Origin | What I changed |
 | --- | --- | --- |
 | Training loop and trainers (MaPLe, IVLP, CoCoOp) | Base repo @ 69bce21 | Unmodified |
+| `trainers/zsclip.py` | Base repo @ 69bce21 | Six added `CUSTOM_TEMPLATES` entries, `"a photo of a {}."`, one per DomainNet style |
 | `train.py` | Base repo @ 69bce21 | One added line: `import datasets.domainnet_b2n`, which registers the DomainNet classes |
 | `.gitignore` | New | Keeps outputs, logs, datasets and checkpoints out of git |
 | `tools/data/common.sh` | New | Download, checksum and image count helpers shared by the download scripts |
@@ -23,7 +24,7 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `splits/domainnet/` | New | Generated: class list, per-class audit, 16-shot train and val files for seeds 1-3, and a fixed test subset per style |
 | `data/README.md` | New | Generated notes: cleaned-list choice, fixed base/new split, classes missing from painting, classes with fewer than 16 training images |
 | `utils/methods.py` | New | Method registry: trainer, config file and final epoch for MaPLe, CoCoOp and ZeroshotCLIP, plus the shot count and seeds |
-| `utils/paths.py` | New | Reads `$DATA` and `$OUTPUT`, builds run, cache and DomainNet split paths, checks split and cache files exist |
+| `utils/paths.py` | New | Reads `$DATA` and `$OUTPUT`, lists the DomainNet datasets, builds run, cache and split paths, checks split and cache files exist |
 | `utils/logging_setup.py` | New | Logging setup shared by the scripts; re-enables logging after an import disables it |
 | `utils/log_parsing.py` | New | Reads correct and total counts from Dassl's `log.txt`, because the log prints accuracy to 1 decimal |
 | `utils/run_record.py` | New | Accuracy, harmonic mean, git commit, Slurm job id and writing `results.json` |

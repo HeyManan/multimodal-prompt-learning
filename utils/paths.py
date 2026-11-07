@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 
+from utils.domainnet import STYLES as DOMAINNET_STYLES
 from utils.methods import NUM_SHOTS
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -9,6 +10,8 @@ RUNS_FOLDER = "base2new"
 SMOKE_FOLDER = "smoke"
 
 DOMAINNET_SPLITS_DIR = REPO_ROOT / "splits" / "domainnet"
+# Their split files are committed, so they need no split file or cache in $DATA.
+DOMAINNET_DATASETS = {"domainnet_b2n_{}".format(style): style for style in DOMAINNET_STYLES}
 
 # A dataset class makes a new random split when its split file is absent.
 SPLIT_FILES = {
@@ -34,7 +37,18 @@ def dataset_config(dataset):
     return path
 
 
+def require_committed_file(path):
+    if not path.is_file():
+        raise FileNotFoundError(
+            "Expected the committed split file {}, found none. It comes from "
+            "tools/data/prepare_domainnet_splits.py.".format(path)
+        )
+
+
 def require_split_file(data_root, dataset):
+    if dataset in DOMAINNET_DATASETS:
+        require_committed_file(domainnet_test_path(DOMAINNET_DATASETS[dataset]))
+        return
     if dataset not in SPLIT_FILES:
         raise ValueError("Expected a dataset in {}, found '{}'.".format(sorted(SPLIT_FILES), dataset))
     path = data_root / dataset / SPLIT_FILES[dataset]
@@ -50,6 +64,9 @@ def fewshot_cache_path(data_root, dataset, seed):
 
 
 def require_fewshot_cache(data_root, dataset, seed):
+    if dataset in DOMAINNET_DATASETS:
+        require_committed_file(domainnet_shot_path(DOMAINNET_DATASETS[dataset], seed))
+        return
     path = fewshot_cache_path(data_root, dataset, seed)
     if not path.is_file():
         raise FileNotFoundError(
