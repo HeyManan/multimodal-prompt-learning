@@ -41,3 +41,24 @@ def sample_sd(values):
 
 def format_number(value, decimals=2):
     return "" if value is None else "{:.{}f}".format(value, decimals)
+
+
+def mean_sd_cell(mean_text, sd_text, preliminary=False):
+    """'mean ± SD' for a Markdown cell; a run without seeds shows its value alone."""
+    cell = mean_text + (" ± " + sd_text if sd_text else "")
+    return cell + (" (prelim.)" if preliminary else "")
+
+
+def write_csv(rows, path):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def write_markdown(path, header, rows, notes):
+    lines = ["| " + " | ".join(header) + " |", "|" + " --- |" * len(header)]
+    lines += ["| " + " | ".join(cells) + " |" for cells in rows]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines + [""] + notes) + "\n")

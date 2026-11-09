@@ -36,7 +36,7 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `tools/submit_runs.py` | New | Expands a group into runs, skips finished ones, and submits one Slurm array per time limit, one after another, so at most 2 jobs run at once |
 | `tools/analysis/collect_results.py` | New | Gathers every `results.json` into `results/runs.csv` |
 | `tools/analysis/reproduction_table.py` | New | Writes the CSV and Markdown table comparing our results with the paper |
-| `utils/results_table.py` | New | Reads `results/runs.csv`, checks for duplicate runs and unequal test sets, sample SD and number formatting, shared by the table scripts |
+| `utils/results_table.py` | New | Reads `results/runs.csv`, checks for duplicate runs and unequal test sets, sample SD, number formatting and the CSV and Markdown writers, shared by the table scripts |
 | `slurm/activate_env.sh` | New | Repository-root check and conda activation, with the rules from `slurm/test_env.sbatch` |
 | `slurm/run_one.sbatch` | New | One GPU GAIVI job for one run; also runs as an array from a task file |
 | `slurm/submit.sh` | New | Activates the environment and calls `tools/submit_runs.py` |
@@ -50,3 +50,6 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `tools/distance/extract_features.py` | New | CLIP image features with the trainers' test transform, L2-normalized in float64 and cached in `$OUTPUT/distance/features/`; checks that every method's test input settings match |
 | `tools/distance/compute_distances.py` | New | FD and nearest-neighbor distance per style and sample seed; writes `results/distance/fd.csv` and `near_far.json` with the near/far groups and the NN ranking as a robustness check |
 | `slurm/style_distance.sbatch` | New | One GPU GAIVI job that runs the feature extraction and the distances; `--smoke` scores 1000 images of one style |
+| `utils/domainnet_gaps.py` | New | Selects the DomainNet runs and checks that each is present once, defines the paired HM gaps G1-G6, and checks G2 = G6 + G5 + G1 |
+| `tools/analysis/domainnet_tables.py` | New | DomainNet average table (per seed, base and new averaged over the styles, then HM) and per-style table ordered by FD |
+| `tools/analysis/domainnet_gap_tables.py` | New | Per-style HM gaps per seed, and the far minus near trend per gap with the 2 SD decision rule and a descriptive Spearman correlation |
