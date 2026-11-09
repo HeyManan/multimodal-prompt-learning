@@ -4,9 +4,8 @@ import json
 import logging
 
 from utils.logging_setup import setup_logging
-from utils.paths import REPO_ROOT, RUNS_FOLDER, require_env_dir
-
-RUNS_CSV = REPO_ROOT / "results" / "runs.csv"
+from utils.paths import RUNS_FOLDER, require_env_dir
+from utils.results_table import RUNS_CSV
 
 
 def read_records(output_root):

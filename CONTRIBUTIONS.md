@@ -36,6 +36,7 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `tools/submit_runs.py` | New | Expands a group into runs, skips finished ones, and submits one Slurm array per time limit, one after another, so at most 2 jobs run at once |
 | `tools/analysis/collect_results.py` | New | Gathers every `results.json` into `results/runs.csv` |
 | `tools/analysis/reproduction_table.py` | New | Writes the CSV and Markdown table comparing our results with the paper |
+| `utils/results_table.py` | New | Reads `results/runs.csv`, checks for duplicate runs and unequal test sets, sample SD and number formatting, shared by the table scripts |
 | `slurm/activate_env.sh` | New | Repository-root check and conda activation, with the rules from `slurm/test_env.sbatch` |
 | `slurm/run_one.sbatch` | New | One GPU GAIVI job for one run; also runs as an array from a task file |
 | `slurm/submit.sh` | New | Activates the environment and calls `tools/submit_runs.py` |

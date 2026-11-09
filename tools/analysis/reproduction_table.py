@@ -5,55 +5,27 @@ the sample SD of the per-seed HMs. Writes CSV and Markdown to results/tables/.
 """
 import csv
 import logging
-from statistics import mean, stdev
+from statistics import mean
 
 from utils.logging_setup import setup_logging
 from utils.methods import NO_SEED
 from utils.paper_results import PAPER_RESULTS
-from utils.paths import REPO_ROOT
+from utils.results_table import (
+    MIN_SEEDS,
+    RUNS_CSV,
+    TABLES_DIR,
+    check_same_test_images,
+    check_unique_runs,
+    format_number,
+    read_runs,
+    sample_sd,
+)
 from utils.run_record import harmonic_mean
 
-RUNS_CSV = REPO_ROOT / "results" / "runs.csv"
-TABLES_DIR = REPO_ROOT / "results" / "tables"
-MIN_SEEDS = 3
 METRICS = ("base", "new", "hm")
 CSV_FIELDS = ["dataset", "method", "n_seeds", "preliminary"] + [
     "{}_{}".format(metric, part) for metric in METRICS for part in ("mean", "sd", "paper", "diff")
 ]
-
-
-def read_runs(csv_path):
-    if not csv_path.is_file():
-        raise FileNotFoundError(
-            "Expected {}, found none. Run tools/analysis/collect_results.py first.".format(csv_path)
-        )
-    with csv_path.open(newline="") as file:
-        return list(csv.DictReader(file))
-
-
-def check_unique_runs(runs):
-    keys = [(run["dataset"], run["method"], run["seed"]) for run in runs]
-    if len(keys) != len(set(keys)):
-        raise RuntimeError("Expected one row per dataset, method and seed, found duplicates.")
-
-
-def check_same_test_images(runs):
-    """Every method on a dataset must be tested on the same number of images."""
-    for dataset in {run["dataset"] for run in runs}:
-        totals = {(run["base_total"], run["new_total"]) for run in runs if run["dataset"] == dataset}
-        if len(totals) != 1:
-            raise RuntimeError(
-                "Expected one (base_total, new_total) for {}, found {}.".format(dataset, sorted(totals))
-            )
-
-
-def sample_sd(values):
-    # SD is undefined for one seed, and a run without seeds has no spread at all.
-    return stdev(values) if len(values) >= 2 else None
-
-
-def format_number(value):
-    return "" if value is None else "{:.2f}".format(value)
 
 
 def summarize(dataset, method, runs, paper):
