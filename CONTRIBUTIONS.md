@@ -45,12 +45,12 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `utils/distance_measures.py` | New | Frechet distance in float64, with the pytorch-fid sqrtm fallback and a 1e-3 limit on the imaginary part, and the nearest-neighbor cosine distance |
 | `tests/test_fd.py` | New | pytest checks of the Frechet distance: zero for identical sets, symmetry, the closed form for diagonal Gaussians, and non-negativity |
 | `utils/clip_model.py` | New | Loads frozen CLIP ViT-B/16 through the trainers' `load_clip_to_cpu`, shared by the environment check and the feature extraction |
-| `utils/style_distance.py` | New | Settings of the style distance to ImageNet (sample sizes, sample seeds, smoke settings, near/far size), its file locations, and the reader of `results/distance/` |
+| `utils/style_distance.py` | New | Settings of the style distance to ImageNet (sample sizes, sample seeds, smoke settings, near/far size), its file locations, and the readers of `results/distance/`, including the secondary NN split |
 | `utils/distance_samples.py` | New | Draws the random DomainNet train images and the per-class ImageNet validation rows, and reads ImageNet images from the parquet files one file at a time |
 | `tools/distance/extract_features.py` | New | CLIP image features with the trainers' test transform, L2-normalized in float64 and cached in `$OUTPUT/distance/features/`; checks that every method's test input settings match |
 | `tools/distance/compute_distances.py` | New | FD and nearest-neighbor distance per style and sample seed; writes `results/distance/fd.csv` and `near_far.json` with the near/far groups and the NN ranking as a robustness check |
 | `slurm/style_distance.sbatch` | New | One GPU GAIVI job that runs the feature extraction and the distances; `--smoke` scores 1000 images of one style |
 | `utils/domainnet_gaps.py` | New | Selects the DomainNet runs and checks that each is present once, defines the paired HM gaps G1-G6, and checks G2 = G6 + G5 + G1 |
 | `tools/analysis/domainnet_tables.py` | New | DomainNet average table (per seed, base and new averaged over the styles, then HM) and per-style table ordered by FD |
-| `tools/analysis/domainnet_gap_tables.py` | New | Per-style HM gaps per seed, and the far minus near trend per gap with the 2 SD decision rule and a descriptive Spearman correlation |
-| `tools/analysis/domainnet_figures.py` | New | Gap vs FD figures for G1 and G2, one point per style, with seed SD and FD sample SD as error bars, in PDF and PNG |
+| `tools/analysis/domainnet_gap_tables.py` | New | Per-style HM gaps per seed, and the far minus near trend per gap with the 2 SD decision rule and a descriptive Spearman correlation; a secondary trend table uses the nearest-neighbor near/far split |
+| `tools/analysis/domainnet_figures.py` | New | Gap vs FD figures for G1 and G2, one marker shape per style (filled near, open far), with seed SD and FD sample SD as error bars, in PDF and PNG |

@@ -57,8 +57,9 @@ def write_csv(rows, path):
         writer.writerows(rows)
 
 
-def write_markdown(path, header, rows, notes):
-    lines = ["| " + " | ".join(header) + " |", "|" + " --- |" * len(header)]
+def write_markdown(path, header, rows, notes, title=None):
+    lines = ["**{}**".format(title), ""] if title else []
+    lines += ["| " + " | ".join(header) + " |", "|" + " --- |" * len(header)]
     lines += ["| " + " | ".join(cells) + " |" for cells in rows]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines + [""] + notes) + "\n")

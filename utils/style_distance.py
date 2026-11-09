@@ -103,3 +103,21 @@ def read_style_distances():
                 )
             )
     return distances
+
+
+def read_nn_groups():
+    """Return {style: near or far} from the NN split in near_far.json. Secondary only: FD sets the groups."""
+    if not NEAR_FAR_JSON.is_file():
+        raise FileNotFoundError(
+            "Expected {}, found none. Run slurm/style_distance.sbatch first.".format(NEAR_FAR_JSON)
+        )
+    split = json.loads(NEAR_FAR_JSON.read_text())["nn_robustness"]
+    groups = {style: NEAR for style in split[NEAR]}
+    groups.update({style: FAR for style in split[FAR]})
+    if sorted(groups) != sorted(STYLES) or len(split[NEAR]) != NEAR_FAR_SIZE:
+        raise ValueError(
+            "Expected the NN split in {} to put {} styles in each group, found near {} and far {}.".format(
+                NEAR_FAR_JSON, NEAR_FAR_SIZE, split[NEAR], split[FAR]
+            )
+        )
+    return groups
