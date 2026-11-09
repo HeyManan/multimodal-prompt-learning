@@ -191,3 +191,100 @@ bash slurm/submit.sh --datasets domainnet_b2n_real --methods MaPLe CoCoOp Zerosh
 
 A Slurm array has one time limit, so a group with different limits becomes one array per limit. Each
 array starts when the one before it ends, so at most 2 jobs still run at once.
+
+## Style distance to ImageNet
+
+Each DomainNet style gets a distance to ImageNet. The distance is computed in the feature space of
+the frozen CLIP ViT-B/16 image encoder, with the trainers' test transform, and does not use any
+run's results. For each sample seed 1-3, it compares 5000 random images from the style's full train
+list with 5000 ImageNet validation images, 5 per class. The features are L2-normalized. Two
+measures are computed, both as mean ± sample SD over the 3 samples:
+
+- the Frechet distance (FD) between the two sets
+- the nearest-neighbor distance: the mean over style images of 1 minus the highest cosine
+  similarity to any ImageNet image
+
+The near and far groups follow a fixed rule. The 3 styles with the lowest mean FD are near, and the
+3 with the highest are far.
+
+**1. ImageNet validation images**
+
+These come from the Hugging Face copy of ImageNet-1k, as parquet files in
+`$DATA/imagenet_hf/data/`. The download uses a separate conda environment, because the Hugging Face
+CLI needs a newer Python than the `maple` environment. First accept the dataset license at
+https://huggingface.co/datasets/ILSVRC/imagenet-1k, then run:
+
+```bash
+conda create -y -n hf python=3.10
+conda activate hf
+pip install huggingface_hub
+hf auth login
+hf download ILSVRC/imagenet-1k --repo-type dataset --include "data/validation*" --local-dir $DATA/imagenet_hf
+```
+
+**2. Test the FD code**
+
+```bash
+PYTHONPATH="${PWD}" pytest tests/test_fd.py
+```
+
+**3. Run the distance job**
+
+The smoke run uses the `real` style and sample seed 1, with 1000 images per side. That is more than
+the 512 feature dimensions, so both covariances have full rank. It writes only to
+`$OUTPUT/smoke/distance/`, recomputes its features every time, and passes when the last line is
+`Style distance smoke test passed.`
+
+```bash
+sbatch --time=00:10:00 slurm/style_distance.sbatch --smoke
+tail -n 1 style_distance_<job id>.out
+```
+
+The full job caches its features in `$OUTPUT/distance/features/`, and a resubmitted job reuses
+them. It writes `results/distance/fd.csv` and `results/distance/near_far.json`.
+`near_far.json` also shows the ranking by nearest-neighbor distance and whether it would give the
+same split. That is reported only, and it never changes the groups.
+
+```bash
+sbatch slurm/style_distance.sbatch
+```
+
+## DomainNet analysis
+
+These scripts read only `results/runs.csv` and `results/distance/`. They run on a CPU, from the
+repository root:
+
+```bash
+export PYTHONPATH="${PWD}"
+python tools/analysis/domainnet_tables.py
+python tools/analysis/domainnet_gap_tables.py
+python tools/analysis/domainnet_figures.py
+```
+
+- `results/tables/domainnet_average.*`: for each method and seed, base and new are averaged over the
+  6 styles, and HM is taken from those averages. The table shows mean ± sample SD over seeds.
+- `results/tables/domainnet_per_style.*`: base, new and HM for each style, with the styles in order
+  of FD.
+- `results/tables/domainnet_gaps.*`: the paired HM gaps per style. Each is one seed minus the same
+  seed:
+
+  | Gap | Definition |
+  | --- | --- |
+  | G1 | MaPLe − IVL-12 |
+  | G1' | MaPLe-12 − IVL-12 |
+  | G1'' | MaPLe − IVL-9 |
+  | G2 | MaPLe − CoCoOp |
+  | G3 | IVL-12 − CoCoOp |
+  | G4 | MaPLe − MaPLe-12 |
+  | G5 | IVL-12 − DLP-12 |
+  | G6 | DLP-12 − CoCoOp |
+
+  The script stops if G2 ≠ G6 + G5 + G1 for any style and seed.
+- `results/tables/domainnet_trends.*`: for each seed, the mean gap over the far styles minus the
+  mean gap over the near styles. A trend is supported only if its mean over seeds is above 0 and
+  above 2 SD. The Spearman correlation between FD and the mean gap is descriptive only.
+- `results/figures/domainnet_gap_vs_fd_{G1,G2}.{pdf,png}`: the gap against FD, one point per style.
+  Vertical bars are the gap's SD over seeds, and horizontal bars are FD's SD over the image samples.
+
+FD is printed to 3 decimals, because FD on unit-norm features is small. The CSVs keep FD at full
+precision. Accuracies and gaps are printed to 2 decimals.
