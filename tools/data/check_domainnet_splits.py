@@ -15,6 +15,7 @@ from dassl.utils import read_image
 
 from train import extend_cfg  # importing train.py also registers the dataset classes
 from utils.domainnet import (
+    DATASET_FOLDER,
     FIRST_NEW_LABEL,
     LAST_BASE_LABEL,
     NUM_CLASSES,
@@ -35,7 +36,6 @@ from utils.paths import (
     require_env_dir,
 )
 
-DATASET_FOLDER = "domainnet"
 AUDIT_PATH = DOMAINNET_SPLITS_DIR / "audit.csv"
 SMOKE_DATASET = "domainnet_b2n_real_smoke"
 NUM_BASE = LAST_BASE_LABEL + 1

@@ -14,6 +14,7 @@ import logging
 import random
 
 from utils.domainnet import (
+    DATASET_FOLDER,
     FIRST_NEW_LABEL,
     LAST_BASE_LABEL,
     LIST_SPLITS,
@@ -38,7 +39,6 @@ from utils.paths import (
     require_env_dir,
 )
 
-DATASET_FOLDER = "domainnet"
 AUDIT_PATH = DOMAINNET_SPLITS_DIR / "audit.csv"
 README_PATH = DOMAINNET_SPLITS_DIR / "README.md"
 BASE_LABELS = range(LAST_BASE_LABEL + 1)

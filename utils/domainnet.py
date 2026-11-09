@@ -1,6 +1,8 @@
 """Fixed DomainNet facts shared by the split tools and the dataset classes."""
 from collections import defaultdict
 
+# Folder under $DATA that holds the images and the list files in splits/.
+DATASET_FOLDER = "domainnet"
 STYLES = ("clipart", "infograph", "painting", "quickdraw", "real", "sketch")
 LIST_SPLITS = ("train", "test")
 NUM_CLASSES = 345

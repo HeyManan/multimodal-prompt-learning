@@ -11,13 +11,13 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `tools/data/common.sh` | New | Download, checksum and image count helpers shared by the download scripts |
 | `tools/data/download_domainnet.sh` | New | Downloads the 6 DomainNet styles and the cleaned train/test lists, prints image counts |
 | `tools/data/download_eurosat_dtd_aircraft.sh` | New | Downloads EuroSAT, DTD and FGVC Aircraft into the `docs/DATASETS.md` layout; EuroSAT comes from the authors' Zenodo record because the documented host timed out |
-| `tools/check_env.py` | New | Prints torch and CUDA versions, runs CLIP ViT-B/16 once on the GPU |
+| `tools/check_env.py` | New | Prints torch and CUDA versions, runs CLIP ViT-B/16 once on the GPU, loaded through `utils/clip_model.py` |
 | `slurm/test_env.sbatch` | New | One GPU, 10 minute GAIVI job that runs the environment check |
 | `requirements.txt` | Base repo @ 69bce21 | Replaced its 3 lines with every pip-installed version in `environment_freeze.txt`, plus `wheel`, which `tb-nightly` requires |
 | `environment_freeze.txt` | New | `conda list` export of the environment on GAIVI |
 | `README.md` | New | Project summary, pinned commits, GAIVI setup, smoke test and how to reproduce the results. The base repo's README is kept at `docs/ORIGINAL_README.md` |
 | `tools/data/write_domainnet_notes.py` | New | Generates `data/README.md` from the DomainNet lists |
-| `utils/domainnet.py` | New | DomainNet styles, the fixed 0-172 / 173-344 split, the class name rule and list reading |
+| `utils/domainnet.py` | New | DomainNet folder name, styles, the fixed 0-172 / 173-344 split, the class name rule and list reading |
 | `tools/data/prepare_domainnet_splits.py` | New | Writes everything in `splits/domainnet/` from the official lists |
 | `datasets/domainnet_b2n.py` | New | One registered dataset class per style, plus a smoke-only class with 5 test images per class. Reads only `splits/domainnet/`, applies the fixed class split, and takes class names and the class count from the fixed list, not from train data |
 | `configs/datasets/domainnet_b2n_*.yaml` | New | One dataset config per style, plus one for the smoke class |
@@ -44,3 +44,9 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `scripts/smoke_test_domainnet.sh` | New | 10 minute end-to-end test on the small DomainNet real subset: MaPLe, seed 1, 1 epoch, then ZeroshotCLIP on base and new |
 | `utils/distance_measures.py` | New | Frechet distance in float64, with the pytorch-fid sqrtm fallback and a 1e-3 limit on the imaginary part, and the nearest-neighbor cosine distance |
 | `tests/test_fd.py` | New | pytest checks of the Frechet distance: zero for identical sets, symmetry, the closed form for diagonal Gaussians, and non-negativity |
+| `utils/clip_model.py` | New | Loads frozen CLIP ViT-B/16 through the trainers' `load_clip_to_cpu`, shared by the environment check and the feature extraction |
+| `utils/style_distance.py` | New | Settings of the style distance to ImageNet (sample sizes, sample seeds, smoke settings, near/far size), its file locations, and the reader of `results/distance/` |
+| `utils/distance_samples.py` | New | Draws the random DomainNet train images and the per-class ImageNet validation rows, and reads ImageNet images from the parquet files one file at a time |
+| `tools/distance/extract_features.py` | New | CLIP image features with the trainers' test transform, L2-normalized in float64 and cached in `$OUTPUT/distance/features/`; checks that every method's test input settings match |
+| `tools/distance/compute_distances.py` | New | FD and nearest-neighbor distance per style and sample seed; writes `results/distance/fd.csv` and `near_far.json` with the near/far groups and the NN ranking as a robustness check |
+| `slurm/style_distance.sbatch` | New | One GPU GAIVI job that runs the feature extraction and the distances; `--smoke` scores 1000 images of one style |

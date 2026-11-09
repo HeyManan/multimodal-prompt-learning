@@ -3,11 +3,9 @@ import logging
 import sys
 
 import torch
-from dassl.config import get_cfg_default
 
-from trainers.coop import load_clip_to_cpu
+from utils.clip_model import BACKBONE, load_clip
 
-BACKBONE = "ViT-B/16"
 IMAGE_SIZE = 224
 EXPECTED_FEATURE_SHAPE = (1, 512)
 
@@ -23,14 +21,6 @@ def require_gpu():
     if not torch.cuda.is_available():
         raise RuntimeError("Expected a usable GPU, found torch.cuda.is_available() == False.")
     logging.info("GPU: %s", torch.cuda.get_device_name(0))
-
-
-def load_clip():
-    # clip.load() fails in this repository: it does not pass the design_details
-    # argument that build_model() requires. The trainers load CLIP this way instead.
-    cfg = get_cfg_default()
-    cfg.MODEL.BACKBONE.NAME = BACKBONE
-    return load_clip_to_cpu(cfg)
 
 
 def run_clip_on_gpu(model):
