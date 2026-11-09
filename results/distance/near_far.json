@@ -1,0 +1,59 @@
+{
+  "rule": "The 3 styles with the lowest mean FD to ImageNet are near, the 3 with the highest are far.",
+  "near": [
+    "real",
+    "painting",
+    "sketch"
+  ],
+  "far": [
+    "clipart",
+    "infograph",
+    "quickdraw"
+  ],
+  "styles_by_fd": [
+    "real",
+    "painting",
+    "sketch",
+    "clipart",
+    "infograph",
+    "quickdraw"
+  ],
+  "nn_robustness": {
+    "styles_by_nn": [
+      "real",
+      "clipart",
+      "quickdraw",
+      "sketch",
+      "painting",
+      "infograph"
+    ],
+    "near": [
+      "real",
+      "clipart",
+      "quickdraw"
+    ],
+    "far": [
+      "sketch",
+      "painting",
+      "infograph"
+    ],
+    "same_split_as_fd": false
+  },
+  "sample_seeds": [
+    1,
+    2,
+    3
+  ],
+  "images_per_style": 5000,
+  "imagenet_images_per_class": 5,
+  "backbone": [
+    "ViT-B/16"
+  ],
+  "feature_git_commits": [
+    "39654e084c6b272eb51609468029aa1ae3f4a1ce"
+  ],
+  "feature_gpus": [
+    "NVIDIA TITAN RTX"
+  ],
+  "distance_git_commit": "39654e084c6b272eb51609468029aa1ae3f4a1ce"
+}
