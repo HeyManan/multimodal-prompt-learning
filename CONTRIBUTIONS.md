@@ -41,3 +41,5 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `slurm/submit.sh` | New | Activates the environment and calls `tools/submit_runs.py` |
 | `scripts/smoke_test.sh` | New | 10 minute end-to-end test: MaPLe on DTD, seed 1, 1 epoch |
 | `scripts/smoke_test_domainnet.sh` | New | 10 minute end-to-end test on the small DomainNet real subset: MaPLe, seed 1, 1 epoch, then ZeroshotCLIP on base and new |
+| `utils/distance_measures.py` | New | Frechet distance in float64, with the pytorch-fid sqrtm fallback and a 1e-3 limit on the imaginary part, and the nearest-neighbor cosine distance |
+| `tests/test_fd.py` | New | pytest checks of the Frechet distance: zero for identical sets, symmetry, the closed form for diagonal Gaussians, and non-negativity |
