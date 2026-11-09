@@ -1,0 +1,9 @@
+grouping,gap,definition,trend_seed1,trend_seed2,trend_seed3,trend_mean,trend_sd,n_seeds,preliminary,supported
+"secondary, NN grouping",G1,MaPLe − IVL-12,-0.61,0.19,-0.29,-0.23,0.40,3,False,False
+"secondary, NN grouping",G1',MaPLe-12 − IVL-12,-0.17,0.01,-0.80,-0.32,0.42,3,False,False
+"secondary, NN grouping",G1'',MaPLe − IVL-9,-2.02,0.21,0.09,-0.57,1.26,3,False,False
+"secondary, NN grouping",G2,MaPLe − CoCoOp,-1.80,-1.30,-1.37,-1.49,0.27,3,False,False
+"secondary, NN grouping",G3,IVL-12 − CoCoOp,-1.19,-1.49,-1.08,-1.26,0.21,3,False,False
+"secondary, NN grouping",G4,MaPLe − MaPLe-12,-0.44,0.18,0.51,0.08,0.48,3,False,False
+"secondary, NN grouping",G5,IVL-12 − DLP-12,-0.83,-1.30,-0.22,-0.78,0.54,3,False,False
+"secondary, NN grouping",G6,DLP-12 − CoCoOp,-0.36,-0.20,-0.86,-0.47,0.35,3,False,False
