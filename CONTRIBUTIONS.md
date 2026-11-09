@@ -14,7 +14,7 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `tools/check_env.py` | New | Prints torch and CUDA versions, runs CLIP ViT-B/16 once on the GPU, loaded through `utils/clip_model.py` |
 | `slurm/test_env.sbatch` | New | One GPU, 10 minute GAIVI job that runs the environment check |
 | `requirements.txt` | Base repo @ 69bce21 | Replaced its 3 lines with every pip-installed version in `environment_freeze.txt`, plus `wheel`, which `tb-nightly` requires. Later added pyarrow, matplotlib and pytest, and their dependencies, for the style distance and the analysis |
-| `environment_freeze.txt` | New | `conda list` export of the environment on GAIVI |
+| `environment_freeze.txt` | New | `conda list` export of the environment on GAIVI. It also lists huggingface_hub and its CLI packages (hf-xet, fsspec, inquirerpy, pfzy, prompt_toolkit). These are installed in that environment, but no project code uses them, so they are not in `requirements.txt` |
 | `README.md` | New | Project summary, pinned commits, GAIVI setup, smoke test and how to reproduce the results. The base repo's README is kept at `docs/ORIGINAL_README.md` |
 | `tools/data/write_domainnet_notes.py` | New | Generates `data/README.md` from the DomainNet lists |
 | `utils/domainnet.py` | New | DomainNet folder name, styles, the fixed 0-172 / 173-344 split, the class name rule and list reading |
