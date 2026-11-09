@@ -3,10 +3,11 @@
 Reads only results/runs.csv and results/distance/. A gap is one seed's HM minus the same seed's HM
 of another method. A seed's trend is the mean gap over the far styles minus the mean gap over the
 near styles. A trend is "supported" only if its mean over seeds is above 0 and above 2 SD. The
-Spearman correlation between FD and mean gap over the 6 styles is descriptive only.
-The FD near/far groups are primary. A secondary trend table uses the nearest-neighbor groups.
-Writes domainnet_gaps, domainnet_trends and domainnet_trends_nn_secondary (CSV and Markdown) to
-results/tables/:
+Spearman correlation between a style distance and the mean gap is descriptive only.
+The FD near/far groups are primary. Two secondary trend tables check them: one uses the
+nearest-neighbor groups and NN distance, the other leaves quickdraw out.
+Writes domainnet_gaps, domainnet_trends, domainnet_trends_nn_secondary and
+domainnet_trends_leave_quickdraw_out_secondary (CSV and Markdown) to results/tables/:
 
     PYTHONPATH="${PWD}" python tools/analysis/domainnet_gap_tables.py
 """
@@ -34,9 +35,13 @@ FD_DECIMALS = 3
 SUPPORT_SDS = 2
 FD_GROUPING = "primary, FD grouping"
 NN_GROUPING = "secondary, NN grouping"
+LEAVE_OUT_GROUPING = "secondary, leave-quickdraw-out"
+# quickdraw has the largest FD and the largest gaps, and changes group between FD and NN, so this
+# check shows whether the FD trend holds without it.
+LEFT_OUT_STYLE = "quickdraw"
 TREND_HEADER = ["Gap", "Definition", "Far − near", "Supported"]
 TREND_NOTES = [
-    "Far − near: per seed, the mean gap over the 3 far styles minus the mean gap over the 3 near "
+    "Far − near: per seed, the mean gap over the far styles minus the mean gap over the near "
     "styles, in percentage points; mean ± sample SD over {} seeds.".format(len(SEEDS)),
     "Supported only if the mean is above 0 and above {} SD.".format(SUPPORT_SDS),
 ]
@@ -75,10 +80,12 @@ def trend_by_seed(runs, gap, groups):
     }
 
 
-def spearman_fd_gap(runs, gap, distances):
-    mean_gaps = [mean(gap_by_seed(runs, gap, distance.style).values()) for distance in distances]
-    # Descriptive only: with 6 styles the p-value says little, so it is not reported.
-    rho, _ = spearmanr([distance.fd_mean for distance in distances], mean_gaps)
+def spearman_gap(runs, gap, distance_by_style):
+    """Spearman rho between a style distance and the mean gap, over the styles in distance_by_style."""
+    styles = list(distance_by_style)
+    mean_gaps = [mean(gap_by_seed(runs, gap, style).values()) for style in styles]
+    # Descriptive only: with 5 or 6 styles the p-value says little, so it is not reported.
+    rho, _ = spearmanr([distance_by_style[style] for style in styles], mean_gaps)
     return rho
 
 
@@ -97,19 +104,14 @@ def trend_row(runs, gap, grouping, groups):
     return row
 
 
-def fd_trend_rows(runs, distances):
-    groups = {distance.style: distance.group for distance in distances}
-    return [
-        dict(
-            trend_row(runs, gap, FD_GROUPING, groups),
-            spearman_fd_vs_mean_gap=format_number(spearman_fd_gap(runs, gap, distances)),
-        )
-        for gap in GAPS
-    ]
-
-
-def nn_trend_rows(runs, nn_groups):
-    return [trend_row(runs, gap, NN_GROUPING, nn_groups) for gap in GAPS]
+def trend_rows(runs, grouping, groups, measure, distance_by_style):
+    rows = []
+    for gap in GAPS:
+        row = trend_row(runs, gap, grouping, groups)
+        row["spearman_measure"] = measure
+        row["spearman_rho"] = format_number(spearman_gap(runs, gap, distance_by_style))
+        rows.append(row)
+    return rows
 
 
 def write_gaps(rows, distances):
@@ -149,34 +151,52 @@ def group_note(groups):
     return "Near: {}. Far: {}.".format(near, far)
 
 
-def write_fd_trends(rows, distances):
+def write_trends(rows, file_stem, groups, notes):
+    """One trend table; notes say where the groups come from and which table is primary."""
+    grouping, measure = rows[0]["grouping"], rows[0]["spearman_measure"]
     write_markdown(
-        TABLES_DIR / "domainnet_trends.md",
-        TREND_HEADER + ["Spearman ρ (FD, mean gap)"],
-        [trend_cells(row) + [row["spearman_fd_vs_mean_gap"]] for row in rows],
-        [group_note({distance.style: distance.group for distance in distances})]
+        TABLES_DIR / (file_stem + ".md"),
+        TREND_HEADER + ["Spearman ρ ({}, mean gap)".format(measure)],
+        [trend_cells(row) + [row["spearman_rho"]] for row in rows],
+        [group_note(groups)]
+        + notes
         + TREND_NOTES
-        + ["Spearman ρ over the 6 styles between mean FD and mean gap is descriptive only; no p-value."],
-        title="Trend from near to far styles ({})".format(FD_GROUPING),
+        + [
+            "Spearman ρ over the {} styles above between mean {} and mean gap is descriptive only; "
+            "no p-value.".format(len(groups), measure)
+        ],
+        title="Trend from near to far styles ({})".format(grouping),
     )
-    write_csv(rows, TABLES_DIR / "domainnet_trends.csv")
+    write_csv(rows, TABLES_DIR / (file_stem + ".csv"))
 
 
-def write_nn_trends(rows, nn_groups):
-    write_markdown(
-        TABLES_DIR / "domainnet_trends_nn_secondary.md",
-        TREND_HEADER,
-        [trend_cells(row) for row in rows],
+def write_all_trends(runs, distances):
+    fd = {distance.style: distance.fd_mean for distance in distances}
+    nn = {distance.style: distance.nn_mean for distance in distances}
+    fd_groups = {distance.style: distance.group for distance in distances}
+    write_trends(trend_rows(runs, FD_GROUPING, fd_groups, "FD", fd), "domainnet_trends", fd_groups, [])
+
+    nn_groups = read_nn_groups()
+    write_trends(
+        trend_rows(runs, NN_GROUPING, nn_groups, "NN distance", nn),
+        "domainnet_trends_nn_secondary",
+        nn_groups,
         [
-            group_note(nn_groups) + " From the nearest-neighbor ranking in results/distance/near_far.json, "
-            "with the same 3 near / 3 far rule.",
-            "Secondary check only: the FD grouping in domainnet_trends.md is primary.",
-        ]
-        + TREND_NOTES
-        + ["Spearman ρ does not depend on the grouping, so it is only in the primary table."],
-        title="Trend from near to far styles ({})".format(NN_GROUPING),
+            "Groups from the nearest-neighbor ranking in results/distance/near_far.json, with the same "
+            "3 near / 3 far rule. Secondary check only: the FD grouping in domainnet_trends.md is primary."
+        ],
     )
-    write_csv(rows, TABLES_DIR / "domainnet_trends_nn_secondary.csv")
+
+    kept_groups = {style: group for style, group in fd_groups.items() if style != LEFT_OUT_STYLE}
+    write_trends(
+        trend_rows(runs, LEAVE_OUT_GROUPING, kept_groups, "FD", {style: fd[style] for style in kept_groups}),
+        "domainnet_trends_leave_quickdraw_out_secondary",
+        kept_groups,
+        [
+            "The FD groups with {} left out. Secondary check only: the FD grouping in "
+            "domainnet_trends.md is primary.".format(LEFT_OUT_STYLE)
+        ],
+    )
 
 
 def main():
@@ -185,9 +205,7 @@ def main():
     check_gap_identity(runs)
     distances = read_style_distances()
     write_gaps(gap_rows(runs, distances), distances)
-    write_fd_trends(fd_trend_rows(runs, distances), distances)
-    nn_groups = read_nn_groups()
-    write_nn_trends(nn_trend_rows(runs, nn_groups), nn_groups)
+    write_all_trends(runs, distances)
     logging.info("Wrote the DomainNet gap and trend tables to %s", TABLES_DIR)
 
 

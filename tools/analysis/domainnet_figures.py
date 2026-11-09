@@ -70,7 +70,9 @@ def main():
         figure = plot_gap_vs_fd(runs, distances, get_gap(name))
         for suffix in ("pdf", "png"):
             path = FIGURES_DIR / "domainnet_gap_vs_fd_{}.{}".format(name, suffix)
-            figure.savefig(path, dpi=PNG_DPI)
+            # No creation date in the PDF, so regenerating an unchanged figure gives an identical file.
+            metadata = {"CreationDate": None} if suffix == "pdf" else None
+            figure.savefig(path, dpi=PNG_DPI, metadata=metadata)
             logging.info("Wrote %s", path)
         plt.close(figure)
 

@@ -74,6 +74,7 @@ class StyleDistance(NamedTuple):
     group: str
     fd_mean: float
     fd_sd: float
+    nn_mean: float
 
 
 def read_style_distances():
@@ -86,7 +87,12 @@ def read_style_distances():
     with FD_CSV.open(newline="") as file:
         rows = list(csv.DictReader(file))
     distances = sorted(
-        (StyleDistance(row["style"], row["group"], float(row["fd_mean"]), float(row["fd_sd"])) for row in rows),
+        (
+            StyleDistance(
+                row["style"], row["group"], float(row["fd_mean"]), float(row["fd_sd"]), float(row["nn_mean"])
+            )
+            for row in rows
+        ),
         key=lambda distance: distance.fd_mean,
     )
     found_styles = [distance.style for distance in distances]

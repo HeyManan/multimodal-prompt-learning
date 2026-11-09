@@ -283,8 +283,12 @@ python tools/analysis/domainnet_figures.py
 - `results/tables/domainnet_trends.*`: for each seed, the mean gap over the far styles minus the
   mean gap over the near styles. A trend is supported only if its mean over seeds is above 0 and
   above 2 SD. The Spearman correlation between FD and the mean gap is descriptive only.
-- `results/tables/domainnet_trends_nn_secondary.*`: the same trends with the nearest-neighbor
-  near/far split from `near_far.json`. This is a secondary check only. The FD grouping is primary.
+- Two secondary checks of the trend table. The FD grouping is primary.
+  - `results/tables/domainnet_trends_nn_secondary.*`: uses the nearest-neighbor near/far split from
+    `near_far.json`, with Spearman ρ against NN distance.
+  - `results/tables/domainnet_trends_leave_quickdraw_out_secondary.*`: uses the FD groups without
+    quickdraw (near: real, painting, sketch; far: clipart, infograph), with Spearman ρ against FD
+    over those 5 styles.
 - `results/figures/domainnet_gap_vs_fd_{G1,G2}.{pdf,png}`: the gap against FD, one point per style.
   Each style has its own marker shape: filled markers are near styles and open markers are far
   styles. Vertical bars are the gap's SD over seeds, and horizontal bars are FD's SD over the image
