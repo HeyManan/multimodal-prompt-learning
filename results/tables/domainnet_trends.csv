@@ -1,9 +1,9 @@
-grouping,gap,definition,trend_seed1,trend_seed2,trend_seed3,trend_mean,trend_sd,n_seeds,preliminary,supported,spearman_fd_vs_mean_gap
-"primary, FD grouping",G1,MaPLe − IVL-12,0.34,-0.01,-0.09,0.08,0.23,3,False,False,0.43
-"primary, FD grouping",G1',MaPLe-12 − IVL-12,-0.16,0.76,0.69,0.43,0.51,3,False,False,0.66
-"primary, FD grouping",G1'',MaPLe − IVL-9,1.95,-0.21,-0.16,0.53,1.24,3,False,False,0.43
-"primary, FD grouping",G2,MaPLe − CoCoOp,3.65,2.71,2.14,2.83,0.76,3,False,True,0.94
-"primary, FD grouping",G3,IVL-12 − CoCoOp,3.30,2.72,2.23,2.75,0.54,3,False,True,0.94
-"primary, FD grouping",G4,MaPLe − MaPLe-12,0.51,-0.77,-0.78,-0.35,0.74,3,False,False,-0.94
-"primary, FD grouping",G5,IVL-12 − DLP-12,2.38,1.79,1.37,1.85,0.51,3,False,True,0.94
-"primary, FD grouping",G6,DLP-12 − CoCoOp,0.92,0.93,0.85,0.90,0.04,3,False,True,0.77
+grouping,gap,definition,trend_seed1,trend_seed2,trend_seed3,trend_mean,trend_sd,n_seeds,preliminary,supported,spearman_measure,spearman_rho
+"primary, FD grouping",G1,MaPLe − IVL-12,0.34,-0.01,-0.09,0.08,0.23,3,False,False,FD,0.43
+"primary, FD grouping",G1',MaPLe-12 − IVL-12,-0.16,0.76,0.69,0.43,0.51,3,False,False,FD,0.66
+"primary, FD grouping",G1'',MaPLe − IVL-9,1.95,-0.21,-0.16,0.53,1.24,3,False,False,FD,0.43
+"primary, FD grouping",G2,MaPLe − CoCoOp,3.65,2.71,2.14,2.83,0.76,3,False,True,FD,0.94
+"primary, FD grouping",G3,IVL-12 − CoCoOp,3.30,2.72,2.23,2.75,0.54,3,False,True,FD,0.94
+"primary, FD grouping",G4,MaPLe − MaPLe-12,0.51,-0.77,-0.78,-0.35,0.74,3,False,False,FD,-0.94
+"primary, FD grouping",G5,IVL-12 − DLP-12,2.38,1.79,1.37,1.85,0.51,3,False,True,FD,0.94
+"primary, FD grouping",G6,DLP-12 − CoCoOp,0.92,0.93,0.85,0.90,0.04,3,False,True,FD,0.77

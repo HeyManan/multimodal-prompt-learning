@@ -12,6 +12,6 @@
 | G6 | DLP-12 − CoCoOp | 0.90 ± 0.04 | yes | 0.77 |
 
 Near: real, painting, sketch. Far: clipart, infograph, quickdraw.
-Far − near: per seed, the mean gap over the 3 far styles minus the mean gap over the 3 near styles, in percentage points; mean ± sample SD over 3 seeds.
+Far − near: per seed, the mean gap over the far styles minus the mean gap over the near styles, in percentage points; mean ± sample SD over 3 seeds.
 Supported only if the mean is above 0 and above 2 SD.
-Spearman ρ over the 6 styles between mean FD and mean gap is descriptive only; no p-value.
+Spearman ρ over the 6 styles above between mean FD and mean gap is descriptive only; no p-value.

@@ -1,0 +1,9 @@
+grouping,gap,definition,trend_seed1,trend_seed2,trend_seed3,trend_mean,trend_sd,n_seeds,preliminary,supported,spearman_measure,spearman_rho
+"secondary, leave-quickdraw-out",G1,MaPLe − IVL-12,-0.02,0.47,-0.54,-0.03,0.51,3,False,False,FD,0.00
+"secondary, leave-quickdraw-out",G1',MaPLe-12 − IVL-12,-0.40,1.08,-0.02,0.22,0.77,3,False,False,FD,0.40
+"secondary, leave-quickdraw-out",G1'',MaPLe − IVL-9,0.45,0.25,-0.21,0.16,0.34,3,False,False,FD,0.00
+"secondary, leave-quickdraw-out",G2,MaPLe − CoCoOp,1.50,0.93,0.21,0.88,0.65,3,False,False,FD,0.90
+"secondary, leave-quickdraw-out",G3,IVL-12 − CoCoOp,1.52,0.46,0.75,0.91,0.55,3,False,False,FD,0.90
+"secondary, leave-quickdraw-out",G4,MaPLe − MaPLe-12,0.38,-0.61,-0.52,-0.25,0.55,3,False,False,FD,-0.90
+"secondary, leave-quickdraw-out",G5,IVL-12 − DLP-12,1.18,0.03,0.81,0.67,0.59,3,False,False,FD,0.90
+"secondary, leave-quickdraw-out",G6,DLP-12 − CoCoOp,0.34,0.43,-0.07,0.24,0.27,3,False,False,FD,0.60
