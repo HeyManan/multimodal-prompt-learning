@@ -53,3 +53,4 @@ Dependency: github.com/KaiyangZhou/Dassl.pytorch @ c61a1b570ac6333bd50fb5ae06aea
 | `utils/domainnet_gaps.py` | New | Selects the DomainNet runs and checks that each is present once, defines the paired HM gaps G1-G6, and checks G2 = G6 + G5 + G1 |
 | `tools/analysis/domainnet_tables.py` | New | DomainNet average table (per seed, base and new averaged over the styles, then HM) and per-style table ordered by FD |
 | `tools/analysis/domainnet_gap_tables.py` | New | Per-style HM gaps per seed, and the far minus near trend per gap with the 2 SD decision rule and a descriptive Spearman correlation |
+| `tools/analysis/domainnet_figures.py` | New | Gap vs FD figures for G1 and G2, one point per style, with seed SD and FD sample SD as error bars, in PDF and PNG |
